@@ -20,6 +20,7 @@ export interface Order {
   customerName: string;
   address: string;
   contactNumber: string;
+  paymentMethod: 'Cash on Delivery' | 'GCash';
 }
 
 @Component({
@@ -65,6 +66,7 @@ export interface Order {
                 <p><strong>Name:</strong> {{order.customerName}}</p>
                 <p><strong>Contact:</strong> {{order.contactNumber}}</p>
                 <p><strong>Address:</strong> {{order.address}}</p>
+                <p><strong>Payment:</strong> <span class="payment-tag" [class.cod]="order.paymentMethod === 'Cash on Delivery'" [class.gcash]="order.paymentMethod === 'GCash'">{{order.paymentMethod}}</span></p>
               </div>
 
               <div class="order-items">
@@ -261,6 +263,27 @@ export interface Order {
     .cancelled-order {
       opacity: 0.6;
       border-color: #331111;
+    }
+
+    .payment-tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 4px;
+    }
+
+    .payment-tag.cod {
+      background: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+      border: 1px solid #28a745;
+    }
+
+    .payment-tag.gcash {
+      background: rgba(64, 191, 255, 0.2);
+      color: #40bfff;
+      border: 1px solid #40bfff;
     }
 
     .order-header {

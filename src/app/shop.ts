@@ -230,6 +230,32 @@ interface Selection {
                 Must be exactly 11 digits
               </small>
             </div>
+            <div class="form-group">
+              <label>Payment Method</label>
+              <div class="payment-options">
+                <button 
+                  type="button"
+                  class="payment-btn" 
+                  [class.active]="customerInfo.paymentMethod === 'Cash on Delivery'"
+                  (click)="customerInfo.paymentMethod = 'Cash on Delivery'"
+                >
+                  <span class="payment-icon">💵</span>
+                  <span class="payment-label">Cash on Delivery</span>
+                </button>
+                <button 
+                  type="button"
+                  class="payment-btn" 
+                  [class.active]="customerInfo.paymentMethod === 'GCash'"
+                  (click)="customerInfo.paymentMethod = 'GCash'"
+                >
+                  <span class="payment-icon">📱</span>
+                  <span class="payment-label">GCash</span>
+                </button>
+              </div>
+              <div class="gcash-note" *ngIf="customerInfo.paymentMethod === 'GCash'">
+                Send payment to <strong>0912 345 6789</strong> (Daily Fit Shop). Order will be confirmed after payment.
+              </div>
+            </div>
           </div>
           <div class="modal-actions">
             <button 
@@ -776,6 +802,52 @@ interface Selection {
 
     .error-text { color: #ff3333; font-size: 10px; margin-top: 2px; }
 
+    .payment-options {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+    }
+
+    .payment-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: #222;
+      border: 2px solid #444;
+      color: #ccc;
+      padding: 12px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .payment-btn:hover {
+      border-color: #666;
+    }
+
+    .payment-btn.active {
+      border-color: #ff3333;
+      background: rgba(255, 51, 51, 0.1);
+      color: #fff;
+    }
+
+    .payment-icon { font-size: 22px; }
+    .payment-label { font-size: 11px; font-weight: bold; }
+
+    .gcash-note {
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: rgba(64, 191, 255, 0.1);
+      border: 1px solid #40bfff;
+      border-radius: 6px;
+      color: #40bfff;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
     .modal-actions { display: flex; gap: 10px; }
 
     .next-btn, .confirm-btn {
@@ -943,7 +1015,8 @@ export class Shop {
   customerInfo = {
     name: '',
     address: '',
-    contact: ''
+    contact: '',
+    paymentMethod: 'Cash on Delivery' as 'Cash on Delivery' | 'GCash'
   };
 
   categories = ['all', 'oversized', 'slim-fit', 'graphic'];
@@ -1084,6 +1157,7 @@ export class Shop {
       customerName: this.customerInfo.name,
       address: this.customerInfo.address,
       contactNumber: this.customerInfo.contact,
+      paymentMethod: this.customerInfo.paymentMethod,
       items: [{
         name: product.name,
         price: product.price,
@@ -1104,7 +1178,7 @@ export class Shop {
       this.isCheckoutMode.set(false);
       
       // Reset form
-      this.customerInfo = { name: '', address: '', contact: '' };
+      this.customerInfo = { name: '', address: '', contact: '', paymentMethod: 'Cash on Delivery' };
       
       setTimeout(() => this.showNotification.set(false), 3000);
     }, 800);
