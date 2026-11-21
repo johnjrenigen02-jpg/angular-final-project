@@ -1,8 +1,29 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Shop } from './shop';
 import { Orders, Order } from './orders';
 import { Cart, CartItem } from './cart';
+
+const CART_KEY = 'dailyfit_cart';
+const ORDERS_KEY = 'dailyfit_orders';
+
+function loadCart(): CartItem[] {
+  try {
+    const raw = localStorage.getItem(CART_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function loadOrders(): Order[] {
+  try {
+    const raw = localStorage.getItem(ORDERS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
 
 @Component({
   selector: 'app-root',
@@ -38,10 +59,19 @@ import { Cart, CartItem } from './cart';
 })
 export class App {
   currentView = signal<'shop' | 'orders' | 'cart'>('shop');
-  ordersList = signal<Order[]>([]);
-  cartItems = signal<CartItem[]>([]);
+  ordersList = signal<Order[]>(loadOrders());
+  cartItems = signal<CartItem[]>(loadCart());
 
   cartTotalItems = () => this.cartItems().reduce((acc, item) => acc + item.quantity, 0);
+
+  // Persist cart and orders to localStorage whenever they change
+  private cartEffect = effect(() => {
+    localStorage.setItem(CART_KEY, JSON.stringify(this.cartItems()));
+  });
+
+  private ordersEffect = effect(() => {
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(this.ordersList()));
+  });
 
   onAddToCart(item: CartItem) {
     this.cartItems.update(items => {
